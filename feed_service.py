@@ -1,23 +1,42 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+from typing import cast
+
 from ardaudiothek_api import get_file_length, get_show_json_graphql
 from rss_xml import build_rss_xml
 
 
-MAX_INT_32 = 2_147_483_647
+@dataclass(frozen=True)
+class FeedRequest:
+    show_id: int
+    latest: int | None = None
 
 
-def parse_and_validate(show_raw: str | None, latest_raw: str | None) -> tuple[int, int]:
-    if show_raw is None or not show_raw.isdigit():
-        raise ValueError('Invalid "show" parameter')
+def _parse_positive_int(name: str, raw: str | None, *, required: bool) -> int | None:
+    if raw is None or raw == "":
+        if required:
+            raise ValueError(f'Invalid "{name}" parameter')
+        return None
 
-    latest = MAX_INT_32 if latest_raw is None else int(latest_raw) if latest_raw.isdigit() else -1
-    if latest < 0:
-        raise ValueError('Invalid "latest" parameter')
+    try:
+        value = int(raw)
+    except ValueError as exc:
+        raise ValueError(f'Invalid "{name}" parameter') from exc
 
-    return int(show_raw), latest
+    if value <= 0:
+        raise ValueError(f'Invalid "{name}" parameter')
+    return value
 
 
-def generate_feed(show_id: int, latest: int, self_link: str) -> str:
-    show = get_show_json_graphql(show_id, latest)
+def parse_and_validate(show_raw: str | None, latest_raw: str | None) -> FeedRequest:
+    show_id = cast(int, _parse_positive_int("show", show_raw, required=True))
+    return FeedRequest(
+        show_id=show_id,
+        latest=_parse_positive_int("latest", latest_raw, required=False),
+    )
+
+
+def generate_feed(request: FeedRequest, self_link: str) -> str:
+    show = get_show_json_graphql(request.show_id, request.latest)
     return build_rss_xml(show, self_link, get_file_length=get_file_length)

@@ -24,7 +24,7 @@ def _episode_description(node: dict[str, Any]) -> str:
 def build_rss_xml(
     show: dict[str, Any],
     self_link: str,
-    get_file_length: Callable[[str], int],
+    get_file_length: Callable[[str], int | None],
 ) -> str:
     rss = ET.Element(
         "rss",
@@ -41,9 +41,13 @@ def build_rss_xml(
     ET.SubElement(channel, "link").text = show.get("sharingUrl", "")
 
     image = ET.SubElement(channel, "image")
-    ET.SubElement(image, "url").text = _replace_width(show.get("image", {}).get("url1X1", ""))
+    ET.SubElement(image, "url").text = _replace_width(
+        show.get("image", {}).get("url1X1", "")
+    )
     ET.SubElement(image, "title").text = show.get("title", "")
-    ET.SubElement(image, "link").text = f"https://www.ardaudiothek.de{show.get('path', '')}"
+    ET.SubElement(
+        image, "link"
+    ).text = f"https://www.ardaudiothek.de{show.get('path', '')}"
 
     ET.SubElement(channel, "description").text = show.get("synopsis", "")
     ET.SubElement(
@@ -57,10 +61,11 @@ def build_rss_xml(
         audios = node.get("audios") or []
         primary_audio = audios[0] if audios else {}
 
-        audio_url = primary_audio.get("url", "")
-        download_url = primary_audio.get("downloadUrl", "")
+        audio_url = primary_audio.get("url") or ""
+        download_url = primary_audio.get("downloadUrl") or ""
+        mime_type = primary_audio.get("mimeType") or "audio/mpeg"
         duration = int(node.get("duration") or 0)
-        length = get_file_length(audio_url) if audio_url else -1
+        length = get_file_length(audio_url) if audio_url else None
 
         ET.SubElement(item, "title").text = node.get("title", "")
         ET.SubElement(item, "description").text = _episode_description(node)
@@ -69,7 +74,7 @@ def build_rss_xml(
         ET.SubElement(
             item,
             "enclosure",
-            {"url": audio_url, "length": str(length), "type": "audio/mpeg"},
+            {"url": audio_url, "length": str(length or 0), "type": mime_type},
         )
         ET.SubElement(
             item,
@@ -78,14 +83,16 @@ def build_rss_xml(
                 "url": download_url,
                 "medium": "audio",
                 "duration": str(duration),
-                "type": "audio/mpeg",
+                "type": mime_type,
             },
         )
 
         publish_date = node.get("publicationStartDateAndTime")
         if publish_date:
             ET.SubElement(item, "pubDate").text = _format_rss_pubdate(publish_date)
-        ET.SubElement(item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}duration").text = str(duration)
+        ET.SubElement(
+            item, "{http://www.itunes.com/dtds/podcast-1.0.dtd}duration"
+        ).text = str(duration)
 
         item_image_url = _replace_width(node.get("image", {}).get("url1X1", ""))
         item_image = ET.SubElement(item, "image")
