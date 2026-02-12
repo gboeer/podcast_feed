@@ -1,6 +1,6 @@
 # podcast_feed
 
-Python rebuild of the ARD Audiothek RSS PHP endpoint.
+Python rebuild of the ARD Audiothek RSS PHP endpoint (Original: https://github.com/matztam/ARD-Audiothek-RSS).
 
 ## Usage
 
