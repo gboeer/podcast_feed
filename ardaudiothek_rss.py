@@ -97,6 +97,11 @@ def _replace_width(url_template: str, width: str = "448") -> str:
     return url_template.replace("{width}", width)
 
 
+def _episode_description(node: dict[str, Any]) -> str:
+    """Prefer full summary text and fall back to synopsis teaser."""
+    return node.get("summary") or node.get("synopsis") or ""
+
+
 def build_rss_xml(show: dict[str, Any], self_link: str) -> str:
     rss = ET.Element(
         "rss",
@@ -135,7 +140,7 @@ def build_rss_xml(show: dict[str, Any], self_link: str) -> str:
         length = get_file_length(audio_url) if audio_url else -1
 
         ET.SubElement(item, "title").text = node.get("title", "")
-        ET.SubElement(item, "description").text = node.get("synopsis", "")
+        ET.SubElement(item, "description").text = _episode_description(node)
         ET.SubElement(item, "guid").text = node.get("sharingUrl", "")
         ET.SubElement(item, "link").text = node.get("sharingUrl", "")
         ET.SubElement(
