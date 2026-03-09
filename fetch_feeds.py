@@ -7,7 +7,7 @@ import json
 import sys
 from pathlib import Path
 
-from feed_service import FeedRequest, generate_feed
+from feed_service import generate_feed, parse_and_validate
 
 
 PODCASTS_FILE = Path(__file__).parent / "podcasts.json"
@@ -27,12 +27,12 @@ def main() -> int:
     errors: list[str] = []
     for entry in podcasts:
         name = entry["name"]
-        show_id = int(entry["show_id"])
+        show_id = str(entry["show_id"])
         latest = entry.get("latest")
 
         print(f"Fetching: {name} (show_id={show_id}, latest={latest})")
         try:
-            request = FeedRequest(show_id=show_id, latest=latest)
+            request = parse_and_validate(show_id, str(latest) if latest is not None else None)
             self_link = f"//localhost/feeds/{_slug(name)}.xml"
             xml = generate_feed(request, self_link)
         except Exception as exc:

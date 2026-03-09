@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from ardaudiothek_api import get_file_length, get_show_json_graphql
 from rss_xml import build_rss_xml
+
+SHOW_URN_PREFIX = "urn:ard:show:"
+SHOW_TOKEN_PATTERN = re.compile(r"^[a-z0-9]+$")
 
 
 @dataclass(frozen=True)
@@ -16,10 +20,21 @@ def _parse_show_id(raw: str | None) -> str:
     if raw is None:
         raise ValueError('Invalid "show" parameter')
 
-    show_id = raw.strip()
-    if not show_id:
+    show_id_raw = raw.strip().lower()
+    if not show_id_raw:
         raise ValueError('Invalid "show" parameter')
-    return show_id
+
+    show_token = (
+        show_id_raw[len(SHOW_URN_PREFIX) :]
+        if show_id_raw.startswith(SHOW_URN_PREFIX)
+        else show_id_raw
+    )
+    if not SHOW_TOKEN_PATTERN.fullmatch(show_token) or show_token.isdigit():
+        raise ValueError(
+            'Invalid "show" parameter: pass the ARD show token (for example "8e6d4d6fa453e7f7")'
+        )
+
+    return f"{SHOW_URN_PREFIX}{show_token}"
 
 
 def _parse_positive_int(name: str, raw: str | None, *, required: bool) -> int | None:
