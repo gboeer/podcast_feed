@@ -34,9 +34,10 @@ def _build_index_html(podcasts: list[dict[str, object]], feed_base_url: str) -> 
         feed_url = f"{feed_base_url}/{slug}.xml"
         escaped_name = html.escape(name)
         escaped_url = html.escape(feed_url)
+        search_text = html.escape(f"{name} {feed_url}".lower(), quote=True)
         items.append(
             (
-                "<li>"
+                f'<li data-search="{search_text}">'
                 f"<strong>{escaped_name}</strong><br>"
                 f'<a href="{escaped_url}">{escaped_url}</a>'
                 "</li>"
@@ -82,6 +83,23 @@ def _build_index_html(podcasts: list[dict[str, object]], feed_base_url: str) -> 
       color: var(--muted);
       line-height: 1.5;
     }}
+    .controls {{
+      display: grid;
+      gap: 8px;
+    }}
+    input[type="search"] {{
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fff;
+      color: var(--text);
+    }}
+    .stats {{
+      color: var(--muted);
+      font-size: 0.95rem;
+    }}
     ul {{
       list-style: none;
       padding: 0;
@@ -111,11 +129,39 @@ def _build_index_html(podcasts: list[dict[str, object]], feed_base_url: str) -> 
   <main>
     <h1>Podcast RSS Feeds</h1>
     <p>Welcome. This page lists all currently published podcast feed URLs for this repository.</p>
+    <div class="controls">
+      <label for="feed-search">Search feeds</label>
+      <input id="feed-search" type="search" placeholder="Type podcast name or URL" autocomplete="off">
+      <div id="feed-stats" class="stats"></div>
+    </div>
     <ul>
 {items_markup}
     </ul>
     <footer>Generated at {generated_at}</footer>
   </main>
+  <script>
+    (function () {{
+      const input = document.getElementById("feed-search");
+      const stats = document.getElementById("feed-stats");
+      const items = Array.from(document.querySelectorAll("li[data-search]"));
+      const total = items.length;
+
+      function update() {{
+        const q = input.value.trim().toLowerCase();
+        let visible = 0;
+        for (const item of items) {{
+          const haystack = item.dataset.search || "";
+          const match = q === "" || haystack.includes(q);
+          item.style.display = match ? "" : "none";
+          if (match) visible += 1;
+        }}
+        stats.textContent = q ? `${{visible}} of ${{total}} feeds` : `${{total}} feeds`;
+      }}
+
+      input.addEventListener("input", update);
+      update();
+    }})();
+  </script>
 </body>
 </html>
 """
