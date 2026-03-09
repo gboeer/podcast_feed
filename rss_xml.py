@@ -5,6 +5,10 @@ from email.utils import format_datetime
 from typing import Any, Callable
 from xml.etree import ElementTree as ET
 
+ET.register_namespace("atom", "http://www.w3.org/2005/Atom")
+ET.register_namespace("media", "http://search.yahoo.com/mrss/")
+ET.register_namespace("itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd")
+
 
 def _format_rss_pubdate(iso_dt: str) -> str:
     dt = datetime.fromisoformat(iso_dt.replace("Z", "+00:00"))
@@ -29,9 +33,6 @@ def build_rss_xml(
     rss = ET.Element(
         "rss",
         {
-            "xmlns:atom": "http://www.w3.org/2005/Atom",
-            "xmlns:media": "http://search.yahoo.com/mrss/",
-            "xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd",
             "version": "2.0",
         },
     )
@@ -50,6 +51,15 @@ def build_rss_xml(
     ).text = f"https://www.ardaudiothek.de{show.get('path', '')}"
 
     ET.SubElement(channel, "description").text = show.get("synopsis", "")
+    ET.SubElement(
+        channel, "{http://www.itunes.com/dtds/podcast-1.0.dtd}language"
+    ).text = "de-DE"
+    ET.SubElement(
+        channel, "{http://www.itunes.com/dtds/podcast-1.0.dtd}category", {"text": "News"}
+    )
+    ET.SubElement(
+        channel, "{http://www.itunes.com/dtds/podcast-1.0.dtd}explicit"
+    ).text = "false"
     ET.SubElement(
         channel,
         "{http://www.w3.org/2005/Atom}link",
@@ -95,9 +105,6 @@ def build_rss_xml(
         ).text = str(duration)
 
         item_image_url = _replace_width(node.get("image", {}).get("url1X1", ""))
-        item_image = ET.SubElement(item, "image")
-        ET.SubElement(item_image, "url").text = item_image_url
-        ET.SubElement(item_image, "title").text = show.get("title", "")
         ET.SubElement(
             item,
             "{http://www.itunes.com/dtds/podcast-1.0.dtd}image",
