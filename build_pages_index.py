@@ -6,6 +6,7 @@ from __future__ import annotations
 import html
 import json
 import os
+import shutil
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -15,6 +16,8 @@ PODCASTS_FILE = ROOT / "podcasts.json"
 PUBLIC_DIR = ROOT / "public"
 INDEX_FILE = PUBLIC_DIR / "index.html"
 TEMPLATE_FILE = ROOT / "templates" / "index.html"
+TEMPLATE_CSS_FILE = ROOT / "templates" / "index.css"
+OUTPUT_CSS_FILE = PUBLIC_DIR / "index.css"
 
 
 def _slug(name: str) -> str:
@@ -61,7 +64,9 @@ def main() -> int:
         _build_index_html(podcasts, feed_base_url),
         encoding="utf-8",
     )
+    shutil.copyfile(TEMPLATE_CSS_FILE, OUTPUT_CSS_FILE)
     print(f"Saved -> {INDEX_FILE.relative_to(ROOT)}")
+    print(f"Saved -> {OUTPUT_CSS_FILE.relative_to(ROOT)}")
     return 0
 
 
