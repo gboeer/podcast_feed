@@ -31,6 +31,7 @@ jobs:
             export FEED_BASE_URL="https://${GITHUB_REPOSITORY_OWNER}.github.io/${REPO_NAME}/feeds"
           fi
           python fetch_feeds.py
+          python build_pages_index.py
 
       - name: Prepare Pages artifact
         run: |

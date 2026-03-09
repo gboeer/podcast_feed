@@ -29,6 +29,10 @@ After each run, feeds are available at:
 - `https://<owner>.github.io/<repo>/feeds/<podcast_slug>.xml`
 - user/organization pages repo (`<owner>.github.io`): `https://<owner>.github.io/feeds/<podcast_slug>.xml`
 
+Landing page:
+- `https://<owner>.github.io/<repo>/`
+- lists all configured podcast feed URLs from `podcasts.json`
+
 ## Structure
 
 - `ardaudiothek_rss.py`: CLI entrypoint and server startup switch.
