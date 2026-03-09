@@ -15,6 +15,8 @@ Für ein User/Org-Pages-Repo (`<owner>.github.io`) ist das Schema:
 - Landing Page: `https://<owner>.github.io/`
 - Feed-URLs: `https://<owner>.github.io/feeds/<podcast_slug>.xml`
 
+Hier ist eine Liste mit allen verfügbaren Podcasts: https://gist.github.com/gboeer/242909e4959fd0b1b47c1a9e5529fea1
+
 ## Veröffentlichung per GitHub Actions
 
 Der Workflow [.github/workflows/fetch-feeds.yml](.github/workflows/fetch-feeds.yml):

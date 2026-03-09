@@ -2,31 +2,63 @@
   {
     "name": "Streitkräfte und Strategien",
     "show_id": "794d51bd58e1747c",
-    "latest": 10
+    "latest": 20
   },
   {
     "name": "Forschung aktuell",
     "show_id": "4dc5200d91eca29c",
-    "latest": 10
+    "latest": 20
   },
   {
     "name": "Kalk & Welk",
     "show_id": "8e6d4d6fa453e7f7",
-    "latest": 10
+    "latest": 20
   },
   {
     "name": "Der Stichtag - Die Chronik der ARD",
     "show_id": "2c105ac761118ee9",
-    "latest": 10
+    "latest": 20
   },
   {
     "name": "Fragen an den Autor",
     "show_id": "fbb1775cda85d930",
-    "latest": 10
+    "latest": 20
   },
   {
     "name": "Plattdeutsche Nachrichten",
     "show_id": "feb73adba71276fd",
-    "latest": 10
+    "latest": 20
+  },
+  {
+    "name": "Kontinent",
+    "show_id": "867e47a4a49d29b7",
+    "latest": 20
+  },
+  {
+    "name": "hr2 Doppelkopf",
+    "show_id": "762d98549219c41c",
+    "latest": 20
+  },
+  {
+    "name": "Gesprächszeit",
+    "show_id": "e8dc6cd659cb0e9d",
+    "latest": 20
+  },
+  {
+    "name": "hr1 Talk",
+    "show_id": "fd5af5b7b07a8db5",
+    "latest": 20
+  },
+  {
+    "name": "Schreiben & Schreddern",
+    "show_id": "7f4bfcdd7c86e595"
+  },
+  {
+    "name": "too many tabs - der Podcast",
+    "show_id": "f9729e4506b88ae3"
+  },
+    {
+    "name": "WDR 5 Satire Deluxe",
+    "show_id": "b4ca0b835f537610"
   }
 ]

@@ -15,6 +15,8 @@ For a user/org pages repo (`<owner>.github.io`), the URL pattern is:
 - Landing page: `https://<owner>.github.io/`
 - Feed URLs: `https://<owner>.github.io/feeds/<podcast_slug>.xml`
 
+Here is a list with all available Podcasts: https://gist.github.com/gboeer/242909e4959fd0b1b47c1a9e5529fea1
+
 ## Publishing via GitHub Actions
 
 The workflow [.github/workflows/fetch-feeds.yml](.github/workflows/fetch-feeds.yml):
