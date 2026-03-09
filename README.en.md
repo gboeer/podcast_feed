@@ -2,9 +2,7 @@
 
 [Deutsches README](README.md)
 
-This project generates RSS feeds for podcasts from ARD Audiothek.  
-It is a Python reimplementation of the original PHP project:  
-https://github.com/matztam/ARD-Audiothek-RSS
+This project generates RSS feeds for podcasts from [ARDSounds](https://www.ardsounds.de) (former ARD Audiothek).  
 
 ## Public feeds (GitHub Pages)
 
@@ -34,6 +32,9 @@ One-time GitHub setting:
 
 ### 1. Generate a single feed (CLI)
 
+Each show is assigned a unique ID, which can be fetched from the ARDSounds URL: e.g. for https://www.ardsounds.de/sendung/kalk-und-welk/urn:ard:show:8e6d4d6fa453e7f7/ the ID is 8e6d4d6fa453e7f7.
+
+Fetch the newest 10 Episodes of "Kalk und Welk".
 ```bash
 python3 ardaudiothek_rss.py --show 8e6d4d6fa453e7f7 --latest 10
 ```
@@ -71,12 +72,8 @@ With custom atom:self base URL:
 FEED_BASE_URL="https://example.com/feeds" python3 fetch_feeds.py
 ```
 
-## Project structure
+## Appreciation
 
-- `ardaudiothek_rss.py`: CLI entrypoint and optional HTTP server
-- `fetch_feeds.py`: batch generation for all feeds in `podcasts.json`
-- `build_pages_index.py`: creates landing page for GitHub Pages
-- `rss_server.py`: HTTP request handling
-- `feed_service.py`: validation and feed orchestration
-- `ardaudiothek_api.py`: API requests and audio metadata
-- `rss_xml.py`: RSS serialization
+This projected started as a Python reimplementation of the original PHP project: 
+
+https://github.com/matztam/ARD-Audiothek-RSS
