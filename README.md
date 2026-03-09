@@ -8,7 +8,7 @@ Dieses Projekt erzeugt RSS-Feeds für Podcasts von [ARDSounds](https://www.ardso
 
 Die Feeds werden über GitHub Pages veröffentlicht.
 
-- Landing Page mit Feed-Suche: `https://gboeer.github.io/podcast_feed/`
+- Landing Page mit Feed-Suche: https://gboeer.github.io/podcast_feed/
 - Feed-URLs: `https://gboeer.github.io/podcast_feed/feeds/<podcast_slug>.xml`
 
 Für ein User/Org-Pages-Repo (`<owner>.github.io`) ist das Schema:
