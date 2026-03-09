@@ -40,6 +40,43 @@ __FEED_ITEMS__
       }
 
       input.addEventListener("input", update);
+
+      async function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+
+      document.addEventListener("click", async (event) => {
+        const btn = event.target.closest(".copy-btn");
+        if (!btn) return;
+        const url = btn.dataset.copy || "";
+        if (!url) return;
+        try {
+          await copyText(url);
+          btn.classList.add("copied");
+          btn.setAttribute("aria-label", "Copied");
+          btn.setAttribute("title", "Copied");
+          setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.setAttribute("aria-label", "Copy feed URL");
+            btn.setAttribute("title", "Copy feed URL");
+          }, 1200);
+        } catch (_err) {
+          btn.setAttribute("title", "Copy failed");
+        }
+      });
+
       update();
     })();
   </script>

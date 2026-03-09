@@ -38,12 +38,18 @@ def _build_index_html(podcasts: list[dict[str, object]], feed_base_url: str) -> 
         feed_url = f"{feed_base_url}/{slug}.xml"
         escaped_name = html.escape(name)
         escaped_url = html.escape(feed_url)
+        escaped_url_attr = html.escape(feed_url, quote=True)
         search_text = html.escape(f"{name} {feed_url}".lower(), quote=True)
         items.append(
             (
                 f'<li data-search="{search_text}">'
                 f"<strong>{escaped_name}</strong><br>"
+                '<div class="feed-link-row">'
                 f'<a href="{escaped_url}">{escaped_url}</a>'
+                f'<button class="copy-btn" type="button" data-copy="{escaped_url_attr}" aria-label="Copy feed URL" title="Copy feed URL">'
+                '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M16 1H6c-1.1 0-2 .9-2 2v12h2V3h10V1zm3 4H10c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H10V7h9v14z"/></svg>'
+                "</button>"
+                "</div>"
                 "</li>"
             )
         )

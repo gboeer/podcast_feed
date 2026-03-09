@@ -69,6 +69,13 @@ li {
   margin-bottom: 12px;
 }
 
+.feed-link-row {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 a {
   color: var(--accent);
   overflow-wrap: anywhere;
@@ -76,6 +83,36 @@ a {
 }
 
 a:hover { text-decoration: underline; }
+
+.copy-btn {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.copy-btn:hover {
+  color: var(--accent);
+  border-color: #bfc8cf;
+}
+
+.copy-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.copy-btn.copied {
+  color: #1d7f4e;
+  border-color: #7cc79f;
+}
 
 footer {
   margin-top: 26px;
