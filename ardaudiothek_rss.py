@@ -16,6 +16,7 @@ import argparse
 import sys
 from html import escape
 
+from ardaudiothek_api import ShowNotFoundError
 from feed_service import generate_feed, parse_and_validate
 from rss_server import serve
 
@@ -44,7 +45,21 @@ def main() -> int:
         print(f"<error>{escape(str(exc), quote=True)}</error>", file=sys.stderr)
         return 2
 
-    rss_xml = generate_feed(request, args.self_link)
+    try:
+        rss_xml = generate_feed(request, args.self_link)
+    except ShowNotFoundError as exc:
+        print(f"<error>{escape(str(exc), quote=True)}</error>", file=sys.stderr)
+        return 2
+    except ValueError as exc:
+        print(f"<error>{escape(str(exc), quote=True)}</error>", file=sys.stderr)
+        return 2
+    except Exception as exc:
+        print(
+            f"<error>{escape(f'Failed to generate feed: {exc}', quote=True)}</error>",
+            file=sys.stderr,
+        )
+        return 1
+
     print(rss_xml)
     return 0
 

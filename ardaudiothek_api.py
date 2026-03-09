@@ -10,6 +10,11 @@ GRAPHQL_URL = "https://api.ardaudiothek.de/graphql"
 API_TIMEOUT_SECONDS = 30
 HEAD_TIMEOUT_SECONDS = 20
 
+
+class ShowNotFoundError(ValueError):
+    """Raised when ARD does not return a show for the provided identifier."""
+
+
 PROGRAMSET_QUERY = """
 query ProgramSet($id: ID!, $first: Int) {
   programSet(id: $id) {
@@ -73,4 +78,9 @@ def get_show_json_graphql(show_id: str, latest: int | None) -> dict[str, Any]:
 
     if payload.get("errors"):
         raise ValueError(f"GraphQL error: {payload['errors']}")
-    return payload["data"]["programSet"]
+
+    program_set = payload.get("data", {}).get("programSet")
+    if program_set is None:
+        raise ShowNotFoundError(f'No show found for "show"={show_id!r}')
+
+    return program_set

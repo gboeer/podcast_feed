@@ -4,6 +4,7 @@ from html import escape
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlencode, urlparse
 
+from ardaudiothek_api import ShowNotFoundError
 from feed_service import generate_feed, parse_and_validate
 
 
@@ -39,6 +40,12 @@ class RSSHandler(BaseHTTPRequestHandler):
 
         try:
             rss_xml = generate_feed(request, self_link)
+        except ShowNotFoundError as exc:
+            self._send_xml(404, _xml_error(exc))
+            return
+        except ValueError as exc:
+            self._send_xml(400, _xml_error(exc))
+            return
         except Exception as exc:  # pragma: no cover
             self._send_xml(502, _xml_error(exc))
             return
