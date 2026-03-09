@@ -1,42 +1,73 @@
-# podcast_feed
+# RSS Feeds für ARDSounds / ARD Audiothek
 
-Python rebuild of the ARD Audiothek RSS PHP endpoint (Original: https://github.com/matztam/ARD-Audiothek-RSS).
+[English README](README.en.md)
 
-## Usage
+Dieses Projekt erzeugt RSS-Feeds für Podcasts aus der ARD Audiothek.  
+Die Basis bildet eine Python-Neuimplementierung des ursprünglichen PHP-Projekts:  
+https://github.com/matztam/ARD-Audiothek-RSS
 
-Generate a feed once (prints RSS XML to stdout):
+## Öffentlich verfügbare Feeds (GitHub Pages)
+
+Die Feeds werden über GitHub Pages veröffentlicht.
+
+- Landing Page mit Feed-Suche: `https://gboeer.github.io/podcast_feed/`
+- Feed-URLs: `https://gboeer.github.io/podcast_feed/feeds/<podcast_slug>.xml`
+
+Für ein User/Org-Pages-Repo (`<owner>.github.io`) ist das Schema:
+- Landing Page: `https://<owner>.github.io/`
+- Feed-URLs: `https://<owner>.github.io/feeds/<podcast_slug>.xml`
+
+## Veröffentlichung per GitHub Actions
+
+Der Workflow [.github/workflows/fetch-feeds.yml](.github/workflows/fetch-feeds.yml):
+- lädt die konfigurierten Podcasts aus `podcasts.json`
+- erzeugt XML-Dateien in `feeds/`
+- erzeugt eine Landing Page (`index.html`) in `public/`
+- deployed alles auf den Branch `gh-pages`
+
+Einmalige GitHub-Einstellung:
+- `Settings -> Pages -> Build and deployment -> Source`
+- `Deploy from a branch`
+- Branch: `gh-pages`, Folder: `/ (root)`
+
+## Selbst hosten
+
+### 1. Einzelnen Feed erzeugen (CLI)
 
 ```bash
 python3 ardaudiothek_rss.py --show 8e6d4d6fa453e7f7 --latest 10
 ```
 
-Run as a local HTTP service:
+Optional mit explizitem Atom-Self-Link:
+
+```bash
+python3 ardaudiothek_rss.py --show 8e6d4d6fa453e7f7 --latest 10 \
+  --self-link "https://example.com/feeds/kalk___welk.xml"
+```
+
+### 2. Lokalen HTTP-Service starten
 
 ```bash
 python3 ardaudiothek_rss.py --serve --port 8000
-# http://localhost:8000/?show=8e6d4d6fa453e7f7&latest=10
 ```
 
-## Publishing with GitHub Pages
+Beispielaufruf:
 
-The workflow at `.github/workflows/fetch-feeds.yml` can publish generated feeds to a `gh-pages` branch.
+```text
+http://localhost:8000/?show=8e6d4d6fa453e7f7&latest=10
+```
 
-One-time GitHub setting:
-- `Settings -> Pages -> Build and deployment -> Source`: select `Deploy from a branch`
-- Branch: `gh-pages`, folder: `/ (root)`
+### 3. Mehrere Feeds auf einmal erzeugen
 
-After each run, feeds are available at:
-- `https://<owner>.github.io/<repo>/feeds/<podcast_slug>.xml`
-- user/organization pages repo (`<owner>.github.io`): `https://<owner>.github.io/feeds/<podcast_slug>.xml`
+Die Datei `podcasts.json` enthält die Liste der zu erzeugenden Feeds:
 
-Landing page:
-- `https://<owner>.github.io/<repo>/`
-- lists all configured podcast feed URLs from `podcasts.json`
+```bash
+python3 fetch_feeds.py
+```
 
-## Structure
+Mit eigener Basis-URL für atom:self:
 
-- `ardaudiothek_rss.py`: CLI entrypoint and server startup switch.
-- `rss_server.py`: HTTP request handling.
-- `feed_service.py`: input validation and feed orchestration.
-- `ardaudiothek_api.py`: ARD API calls and audio metadata lookup.
-- `rss_xml.py`: RSS XML serialization.
+```bash
+FEED_BASE_URL="https://example.com/feeds" python3 fetch_feeds.py
+```
+
