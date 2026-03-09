@@ -17,6 +17,18 @@ python3 ardaudiothek_rss.py --serve --port 8000
 # http://localhost:8000/?show=8e6d4d6fa453e7f7&latest=10
 ```
 
+## Publishing with GitHub Pages
+
+The workflow at `.github/workflows/fetch-feeds.yml` can publish generated feeds to a `gh-pages` branch.
+
+One-time GitHub setting:
+- `Settings -> Pages -> Build and deployment -> Source`: select `Deploy from a branch`
+- Branch: `gh-pages`, folder: `/ (root)`
+
+After each run, feeds are available at:
+- `https://<owner>.github.io/<repo>/feeds/<podcast_slug>.xml`
+- user/organization pages repo (`<owner>.github.io`): `https://<owner>.github.io/feeds/<podcast_slug>.xml`
+
 ## Structure
 
 - `ardaudiothek_rss.py`: CLI entrypoint and server startup switch.

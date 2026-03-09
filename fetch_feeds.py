@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -19,8 +20,14 @@ def _slug(name: str) -> str:
     return "".join(c if c.isalnum() else "_" for c in name).strip("_").lower()
 
 
+def _feed_base_url() -> str:
+    """Base URL used for atom:self links in generated RSS files."""
+    return os.getenv("FEED_BASE_URL", "http://localhost:8000/feeds").rstrip("/")
+
+
 def main() -> int:
     podcasts = json.loads(PODCASTS_FILE.read_text(encoding="utf-8"))
+    feed_base_url = _feed_base_url()
 
     FEEDS_DIR.mkdir(exist_ok=True)
 
@@ -33,7 +40,7 @@ def main() -> int:
         print(f"Fetching: {name} (show_id={show_id}, latest={latest})")
         try:
             request = parse_and_validate(show_id, str(latest) if latest is not None else None)
-            self_link = f"//localhost/feeds/{_slug(name)}.xml"
+            self_link = f"{feed_base_url}/{_slug(name)}.xml"
             xml = generate_feed(request, self_link)
         except Exception as exc:
             msg = f"  ERROR fetching {name}: {exc}"
