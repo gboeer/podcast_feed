@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import cast
 
 from ardaudiothek_api import get_file_length, get_show_json_graphql
 from rss_xml import build_rss_xml
@@ -9,8 +8,18 @@ from rss_xml import build_rss_xml
 
 @dataclass(frozen=True)
 class FeedRequest:
-    show_id: int
+    show_id: str
     latest: int | None = None
+
+
+def _parse_show_id(raw: str | None) -> str:
+    if raw is None:
+        raise ValueError('Invalid "show" parameter')
+
+    show_id = raw.strip()
+    if not show_id:
+        raise ValueError('Invalid "show" parameter')
+    return show_id
 
 
 def _parse_positive_int(name: str, raw: str | None, *, required: bool) -> int | None:
@@ -30,9 +39,8 @@ def _parse_positive_int(name: str, raw: str | None, *, required: bool) -> int | 
 
 
 def parse_and_validate(show_raw: str | None, latest_raw: str | None) -> FeedRequest:
-    show_id = cast(int, _parse_positive_int("show", show_raw, required=True))
     return FeedRequest(
-        show_id=show_id,
+        show_id=_parse_show_id(show_raw),
         latest=_parse_positive_int("latest", latest_raw, required=False),
     )
 

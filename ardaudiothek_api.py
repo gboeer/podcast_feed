@@ -11,7 +11,7 @@ API_TIMEOUT_SECONDS = 30
 HEAD_TIMEOUT_SECONDS = 20
 
 PROGRAMSET_QUERY = """
-query ProgramSet($id: Int!, $first: Int) {
+query ProgramSet($id: ID!, $first: Int) {
   programSet(id: $id) {
     title
     path
@@ -57,7 +57,7 @@ def get_file_length(url: str) -> int | None:
         return None
 
 
-def get_show_json_graphql(show_id: int, latest: int | None) -> dict[str, Any]:
+def get_show_json_graphql(show_id: str, latest: int | None) -> dict[str, Any]:
     body = json.dumps(
         {"query": PROGRAMSET_QUERY, "variables": {"id": show_id, "first": latest}}
     ).encode("utf-8")

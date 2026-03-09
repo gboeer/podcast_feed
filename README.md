@@ -8,6 +8,8 @@ Generate a feed once (prints RSS XML to stdout):
 
 ```bash
 python3 ardaudiothek_rss.py --show 10777871 --latest 10
+# or with a URN show ID
+python3 ardaudiothek_rss.py --show urn:ard:show:8e6d4d6fa453e7f7 --latest 10
 ```
 
 Run as a local HTTP service:
@@ -15,6 +17,7 @@ Run as a local HTTP service:
 ```bash
 python3 ardaudiothek_rss.py --serve --port 8000
 # http://localhost:8000/?show=10777871&latest=10
+# http://localhost:8000/?show=urn%3Aard%3Ashow%3A8e6d4d6fa453e7f7&latest=10
 ```
 
 ## Structure

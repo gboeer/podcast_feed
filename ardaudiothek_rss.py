@@ -3,6 +3,7 @@
 
 Usage:
     python ardaudiothek_rss.py --show 10777871 --latest 10
+    python ardaudiothek_rss.py --show urn:ard:show:8e6d4d6fa453e7f7 --latest 10
 
 Run as a local web server:
     python ardaudiothek_rss.py --serve --port 8000
@@ -21,7 +22,9 @@ from rss_server import serve
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate ARD Audiothek RSS feed")
-    parser.add_argument("--show", type=str, help="Show ID (numeric)")
+    parser.add_argument(
+        "--show", type=str, help="Show ID (numeric or urn:ard:show:...)"
+    )
     parser.add_argument("--latest", type=str, default=None, help="Latest N episodes")
     parser.add_argument(
         "--self-link", default="//localhost/ardaudiothek-rss.py", help="Atom self link"
