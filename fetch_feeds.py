@@ -8,7 +8,9 @@ import os
 import sys
 from pathlib import Path
 
-from feed_service import generate_feed, parse_and_validate
+from ardaudiothek_api import get_file_length, get_show_json_graphql
+from feed_service import parse_and_validate
+from rss_xml import build_rss_xml
 
 
 PODCASTS_FILE = Path(__file__).parent / "podcasts.json"
@@ -40,8 +42,12 @@ def main() -> int:
         print(f"Fetching: {name} (show_id={show_id}, latest={latest})")
         try:
             request = parse_and_validate(show_id, str(latest) if latest is not None else None)
+            show = get_show_json_graphql(request.show_id, request.latest)
             self_link = f"{feed_base_url}/{_slug(name)}.xml"
-            xml = generate_feed(request, self_link)
+            xml = build_rss_xml(show, self_link, get_file_length=get_file_length)
+            source_url = show.get("sharingUrl", "")
+            if source_url:
+                entry["source_url"] = source_url
         except Exception as exc:
             msg = f"  ERROR fetching {name}: {exc}"
             print(msg, file=sys.stderr)
@@ -51,6 +57,9 @@ def main() -> int:
         out_path = FEEDS_DIR / f"{_slug(name)}.xml"
         out_path.write_text(xml, encoding="utf-8")
         print(f"  Saved -> {out_path.relative_to(Path(__file__).parent)}")
+
+    PODCASTS_FILE.write_text(json.dumps(podcasts, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    print(f"Updated -> {PODCASTS_FILE.name}")
 
     if errors:
         print(f"\n{len(errors)} feed(s) failed.", file=sys.stderr)
