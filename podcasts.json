@@ -60,5 +60,27 @@
     {
     "name": "WDR 5 Satire Deluxe",
     "show_id": "b4ca0b835f537610"
-  }
+  },
+  {
+    "name": "Being The Beatles - eine Pop-Revolution",
+    "show_id": "5d933a937bf865a2"
+  },
+  {
+    "name": "Kunstverbrechen - True Crime meets Kultur",
+    "show_id": "78b44da017c70e17"
+  },
+  {
+    "name": "Unser Sandmännchen",
+    "show_id": "0e3f60ed4ba198df",
+    "latest": 40
+  },
+  {
+    "name": "15 Minuten. Der tagesschau-Podcast am Morgen",
+    "show_id": "b84b465ae5abcd64",
+    "latest": 40
+  },
+  {
+    "name": "Chronik der Gefühle - Die Hörspiele",
+    "show_id": "01b02176eb6d5ae0"
+  },
 ]
