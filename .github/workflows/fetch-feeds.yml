@@ -22,6 +22,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Validate podcasts.json
+        run: python validate_podcasts.py
+
       - name: Fetch RSS feeds
         run: |
           REPO_NAME="${GITHUB_REPOSITORY#*/}"

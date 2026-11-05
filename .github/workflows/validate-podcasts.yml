@@ -1,0 +1,30 @@
+name: Validate podcasts.json
+
+on:
+  push:
+    paths:
+      - "podcasts.json"
+      - "validate_podcasts.py"
+  pull_request:
+    paths:
+      - "podcasts.json"
+      - "validate_podcasts.py"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate podcasts.json
+        run: python validate_podcasts.py
