@@ -92,3 +92,5 @@ Thumbs.db
 Desktop.ini
 
 CLAUDE.md
+# Generated feeds (published to gh-pages by the workflow)
+/feeds/
