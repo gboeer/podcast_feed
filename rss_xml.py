@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from email.utils import format_datetime
 from typing import Any, Callable
@@ -8,6 +9,8 @@ from xml.etree import ElementTree as ET
 ET.register_namespace("atom", "http://www.w3.org/2005/Atom")
 ET.register_namespace("media", "http://search.yahoo.com/mrss/")
 ET.register_namespace("itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd")
+
+FILE_LENGTH_WORKERS = 8
 
 
 def _format_rss_pubdate(iso_dt: str) -> str:
@@ -23,6 +26,22 @@ def _replace_width(url_template: str, width: str = "448") -> str:
 
 def _episode_description(node: dict[str, Any]) -> str:
     return node.get("summary") or node.get("synopsis") or ""
+
+
+def _fetch_file_lengths(
+    nodes: list[dict[str, Any]],
+    get_file_length: Callable[[str], int | None],
+) -> dict[str, int | None]:
+    """Look up enclosure sizes concurrently; the ARD API does not provide them."""
+    urls = {
+        audios[0]["url"]
+        for node in nodes
+        if (audios := node.get("audios")) and audios[0].get("url")
+    }
+    if not urls:
+        return {}
+    with ThreadPoolExecutor(max_workers=FILE_LENGTH_WORKERS) as pool:
+        return dict(zip(urls, pool.map(get_file_length, urls)))
 
 
 def build_rss_xml(
@@ -66,7 +85,10 @@ def build_rss_xml(
         {"href": self_link, "rel": "self", "type": "application/rss+xml"},
     )
 
-    for node in show.get("items", {}).get("nodes", []):
+    nodes = show.get("items", {}).get("nodes", [])
+    file_lengths = _fetch_file_lengths(nodes, get_file_length)
+
+    for node in nodes:
         item = ET.SubElement(channel, "item")
         audios = node.get("audios") or []
         primary_audio = audios[0] if audios else {}
@@ -75,7 +97,7 @@ def build_rss_xml(
         download_url = primary_audio.get("downloadUrl") or ""
         mime_type = primary_audio.get("mimeType") or "audio/mpeg"
         duration = int(node.get("duration") or 0)
-        length = get_file_length(audio_url) if audio_url else None
+        length = file_lengths.get(audio_url)
 
         ET.SubElement(item, "title").text = node.get("title", "")
         ET.SubElement(item, "description").text = _episode_description(node)
