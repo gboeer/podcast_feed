@@ -7,11 +7,21 @@ on:
   workflow_dispatch: # allow manual trigger
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+# Never run two deployments at once; a newer run replaces a queued one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   fetch-and-publish:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Check out repository
@@ -40,11 +50,12 @@ jobs:
         run: |
           mkdir -p public/feeds
           cp -f feeds/*.xml public/feeds/
-          touch public/.nojekyll
 
-      - name: Deploy to gh-pages branch
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./public
+          path: ./public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -23,12 +23,11 @@ Der Workflow [.github/workflows/fetch-feeds.yml](.github/workflows/fetch-feeds.y
 - lädt die konfigurierten Podcasts aus `podcasts.json`
 - erzeugt XML-Dateien in `feeds/`
 - erzeugt eine Landing Page (`index.html`) in `public/`
-- deployed alles auf den Branch `gh-pages`
+- veröffentlicht alles direkt auf GitHub Pages (ohne eigenen Branch)
 
 Einmalige GitHub-Einstellung:
 - `Settings -> Pages -> Build and deployment -> Source`
-- `Deploy from a branch`
-- Branch: `gh-pages`, Folder: `/ (root)`
+- `GitHub Actions`
 
 ## Selbst hosten
 
