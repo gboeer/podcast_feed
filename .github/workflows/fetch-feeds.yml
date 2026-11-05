@@ -35,6 +35,15 @@ jobs:
       - name: Validate podcasts.json
         run: python validate_podcasts.py
 
+      # Previous run's feeds: reused for enclosure sizes and as fallback for
+      # shows that fail to fetch. A fresh key per run, restoring the newest.
+      - name: Restore feeds from previous run
+        uses: actions/cache@v4
+        with:
+          path: feeds
+          key: feeds-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: feeds-
+
       - name: Fetch RSS feeds
         run: |
           REPO_NAME="${GITHUB_REPOSITORY#*/}"

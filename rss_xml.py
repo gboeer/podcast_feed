@@ -44,6 +44,18 @@ def _fetch_file_lengths(
         return dict(zip(urls, pool.map(get_file_length, urls)))
 
 
+def read_enclosure_lengths(xml_text: str) -> dict[str, int]:
+    """Enclosure sizes recorded in a previously built feed, keyed by audio URL."""
+    lengths: dict[str, int] = {}
+    for enclosure in ET.fromstring(xml_text).iter("enclosure"):
+        url = enclosure.get("url")
+        length = enclosure.get("length", "")
+        # length="0" means the lookup failed last time, so it's worth retrying.
+        if url and length.isdigit() and int(length) > 0:
+            lengths[url] = int(length)
+    return lengths
+
+
 def build_rss_xml(
     show: dict[str, Any],
     self_link: str,
