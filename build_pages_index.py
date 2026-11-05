@@ -13,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 PODCASTS_FILE = ROOT / "podcasts.json"
+FEEDS_DIR = ROOT / "feeds"
 PUBLIC_DIR = ROOT / "public"
 INDEX_FILE = PUBLIC_DIR / "index.html"
 TEMPLATE_FILE = ROOT / "templates" / "index.html"
@@ -35,6 +36,10 @@ def _build_index_html(podcasts: list[dict[str, object]], feed_base_url: str) -> 
     for entry in podcasts:
         name = str(entry["name"])
         slug = _slug(name)
+        # Skip shows whose fetch failed, so the page never links to a missing feed.
+        if not (FEEDS_DIR / f"{slug}.xml").is_file():
+            print(f"Skipping {name}: no feed file {slug}.xml")
+            continue
         feed_url = f"{feed_base_url}/{slug}.xml"
         source_url = str(entry.get("source_url", ""))
         escaped_name = html.escape(name)

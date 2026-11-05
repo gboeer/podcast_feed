@@ -27,6 +27,14 @@ def _feed_base_url() -> str:
     return os.getenv("FEED_BASE_URL", "http://localhost:8000/feeds").rstrip("/")
 
 
+def _escape_annotation(value: str, *, is_property: bool = False) -> str:
+    """Escape text for a GitHub Actions workflow command (e.g. ::warning::)."""
+    value = value.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+    if is_property:
+        value = value.replace(":", "%3A").replace(",", "%2C")
+    return value
+
+
 def main() -> int:
     podcasts = json.loads(PODCASTS_FILE.read_text(encoding="utf-8"))
     feed_base_url = _feed_base_url()
@@ -51,6 +59,10 @@ def main() -> int:
         except Exception as exc:
             msg = f"  ERROR fetching {name}: {exc}"
             print(msg, file=sys.stderr)
+            if os.getenv("GITHUB_ACTIONS") == "true":
+                # Surface the failure as an annotation on the workflow run page.
+                title = _escape_annotation(f"Feed failed: {name}", is_property=True)
+                print(f"::warning title={title}::{_escape_annotation(str(exc))}")
             errors.append(msg)
             continue
 
@@ -62,8 +74,11 @@ def main() -> int:
     print(f"Updated -> {PODCASTS_FILE.name}")
 
     if errors:
-        print(f"\n{len(errors)} feed(s) failed.", file=sys.stderr)
-        return 1
+        print(f"\n{len(errors)} of {len(podcasts)} feed(s) failed.", file=sys.stderr)
+        # Only fail the run if nothing was generated, so one broken show
+        # doesn't block publishing the others.
+        if len(errors) == len(podcasts):
+            return 1
     return 0
 
 
