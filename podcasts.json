@@ -30,18 +30,8 @@
     "latest": 20
   },
   {
-    "name": "Kontinent",
-    "show_id": "867e47a4a49d29b7",
-    "latest": 20
-  },
-  {
     "name": "hr2 Doppelkopf",
     "show_id": "762d98549219c41c",
-    "latest": 20
-  },
-  {
-    "name": "Gesprächszeit",
-    "show_id": "e8dc6cd659cb0e9d",
     "latest": 20
   },
   {
@@ -57,7 +47,7 @@
     "name": "too many tabs - der Podcast",
     "show_id": "f9729e4506b88ae3"
   },
-    {
+  {
     "name": "WDR 5 Satire Deluxe",
     "show_id": "b4ca0b835f537610"
   },
