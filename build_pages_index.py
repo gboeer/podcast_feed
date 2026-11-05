@@ -5,15 +5,12 @@ from __future__ import annotations
 
 import html
 import json
-import os
 import shutil
 from datetime import datetime, timezone
-from pathlib import Path
+
+from feed_files import FEEDS_DIR, PODCASTS_FILE, ROOT, feed_base_url, feed_slug
 
 
-ROOT = Path(__file__).parent
-PODCASTS_FILE = ROOT / "podcasts.json"
-FEEDS_DIR = ROOT / "feeds"
 PUBLIC_DIR = ROOT / "public"
 INDEX_FILE = PUBLIC_DIR / "index.html"
 TEMPLATE_FILE = ROOT / "templates" / "index.html"
@@ -21,26 +18,18 @@ TEMPLATE_CSS_FILE = ROOT / "templates" / "index.css"
 OUTPUT_CSS_FILE = PUBLIC_DIR / "index.css"
 
 
-def _slug(name: str) -> str:
-    return "".join(c if c.isalnum() else "_" for c in name).strip("_").lower()
-
-
-def _feed_base_url() -> str:
-    return os.getenv("FEED_BASE_URL", "http://localhost:8000/feeds").rstrip("/")
-
-
-def _build_index_html(podcasts: list[dict[str, object]], feed_base_url: str) -> str:
+def _build_index_html(podcasts: list[dict[str, object]], base_url: str) -> str:
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     items: list[str] = []
 
     for entry in podcasts:
         name = str(entry["name"])
-        slug = _slug(name)
+        slug = feed_slug(name)
         # Skip shows whose fetch failed, so the page never links to a missing feed.
         if not (FEEDS_DIR / f"{slug}.xml").is_file():
             print(f"Skipping {name}: no feed file {slug}.xml")
             continue
-        feed_url = f"{feed_base_url}/{slug}.xml"
+        feed_url = f"{base_url}/{slug}.xml"
         source_url = str(entry.get("source_url", ""))
         escaped_name = html.escape(name)
         escaped_url = html.escape(feed_url)
@@ -76,11 +65,11 @@ def _build_index_html(podcasts: list[dict[str, object]], feed_base_url: str) -> 
 
 def main() -> int:
     podcasts = json.loads(PODCASTS_FILE.read_text(encoding="utf-8"))
-    feed_base_url = _feed_base_url()
+    base_url = feed_base_url()
 
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
     INDEX_FILE.write_text(
-        _build_index_html(podcasts, feed_base_url),
+        _build_index_html(podcasts, base_url),
         encoding="utf-8",
     )
     shutil.copyfile(TEMPLATE_CSS_FILE, OUTPUT_CSS_FILE)

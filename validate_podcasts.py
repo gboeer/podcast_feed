@@ -5,10 +5,9 @@ from __future__ import annotations
 
 import json
 import sys
-from pathlib import Path
 
+from feed_files import PODCASTS_FILE, ROOT, feed_slug
 from feed_service import parse_and_validate
-from fetch_feeds import PODCASTS_FILE, _slug
 
 
 def validate(text: str) -> list[str]:
@@ -33,7 +32,7 @@ def validate(text: str) -> list[str]:
             errors.append(f"{where}: 'name' must be a non-empty string")
         else:
             where = f"entry {index} ({name!r})"
-            slug = _slug(name)
+            slug = feed_slug(name)
             if slug in seen_slugs:
                 errors.append(
                     f"{where}: feed filename {slug}.xml clashes with {seen_slugs[slug]!r}"
@@ -58,7 +57,7 @@ def validate(text: str) -> list[str]:
 
 def main() -> int:
     errors = validate(PODCASTS_FILE.read_text(encoding="utf-8"))
-    name = PODCASTS_FILE.relative_to(Path(__file__).parent)
+    name = PODCASTS_FILE.relative_to(ROOT)
     if errors:
         for error in errors:
             print(f"{name}: {error}", file=sys.stderr)

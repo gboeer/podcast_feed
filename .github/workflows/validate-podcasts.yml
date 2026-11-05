@@ -5,10 +5,12 @@ on:
     paths:
       - "podcasts.json"
       - "validate_podcasts.py"
+      - "feed_files.py"
   pull_request:
     paths:
       - "podcasts.json"
       - "validate_podcasts.py"
+      - "feed_files.py"
 
 permissions:
   contents: read
