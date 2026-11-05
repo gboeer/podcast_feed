@@ -133,5 +133,7 @@ def build_rss_xml(
             {"href": item_image_url},
         )
 
+    # Pretty-print so daily diffs on the gh-pages branch stay readable.
+    ET.indent(rss)
     xml = ET.tostring(rss, encoding="utf-8", xml_declaration=False)
     return xml.decode("utf-8")
