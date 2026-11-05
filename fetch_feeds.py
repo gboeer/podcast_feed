@@ -8,7 +8,7 @@ import os
 import sys
 
 from ardaudiothek_api import get_file_length, get_show_json_graphql
-from feed_files import FEEDS_DIR, PODCASTS_FILE, ROOT, feed_base_url, feed_slug
+from feed_files import FEEDS_DIR, PODCASTS_FILE, ROOT, feed_base_url, feed_filename
 from feed_service import parse_and_validate
 from rss_xml import build_rss_xml
 
@@ -37,7 +37,8 @@ def main() -> int:
         try:
             request = parse_and_validate(show_id, str(latest) if latest is not None else None)
             show = get_show_json_graphql(request.show_id, request.latest)
-            self_link = f"{base_url}/{feed_slug(name)}.xml"
+            filename = feed_filename(request.show_id)
+            self_link = f"{base_url}/{filename}"
             xml = build_rss_xml(show, self_link, get_file_length=get_file_length)
             source_url = show.get("sharingUrl", "")
             if source_url:
@@ -52,7 +53,7 @@ def main() -> int:
             errors.append(msg)
             continue
 
-        out_path = FEEDS_DIR / f"{feed_slug(name)}.xml"
+        out_path = FEEDS_DIR / filename
         out_path.write_text(xml, encoding="utf-8")
         print(f"  Saved -> {out_path.relative_to(ROOT)}")
 

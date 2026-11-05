@@ -9,11 +9,11 @@ Dieses Projekt erzeugt RSS-Feeds für Podcasts von [ARDSounds](https://www.ardso
 Die Feeds werden über GitHub Pages veröffentlicht.
 
 - Landing Page mit Feed-Suche: https://gboeer.github.io/podcast_feed/
-- Feed-URLs: `https://gboeer.github.io/podcast_feed/feeds/<podcast_slug>.xml`
+- Feed-URLs: `https://gboeer.github.io/podcast_feed/feeds/<show_id>.xml`
 
 Für ein User/Org-Pages-Repo (`<owner>.github.io`) ist das Schema:
 - Landing Page: `https://<owner>.github.io/`
-- Feed-URLs: `https://<owner>.github.io/feeds/<podcast_slug>.xml`
+- Feed-URLs: `https://<owner>.github.io/feeds/<show_id>.xml`
 
 Hier ist eine Liste mit allen verfügbaren Podcasts: https://gist.github.com/gboeer/242909e4959fd0b1b47c1a9e5529fea1
 
@@ -44,7 +44,7 @@ Optional mit explizitem Atom-Self-Link:
 
 ```bash
 python3 ardaudiothek_rss.py --show 8e6d4d6fa453e7f7 --latest 10 \
-  --self-link "https://example.com/feeds/kalk___welk.xml"
+  --self-link "https://example.com/feeds/8e6d4d6fa453e7f7.xml"
 ```
 
 ### 2. Lokalen HTTP-Service starten

@@ -10,9 +10,15 @@ PODCASTS_FILE = ROOT / "podcasts.json"
 FEEDS_DIR = ROOT / "feeds"
 
 
-def feed_slug(name: str) -> str:
-    """Convert a podcast name to a safe filename stem."""
-    return "".join(c if c.isalnum() else "_" for c in name).strip("_").lower()
+SHOW_URN_PREFIX = "urn:ard:show:"
+
+
+def feed_filename(show_id: str) -> str:
+    """Feed filename for a show: its ARD show token, which never changes (unlike the title)."""
+    token = show_id.strip().lower()
+    if token.startswith(SHOW_URN_PREFIX):
+        token = token[len(SHOW_URN_PREFIX) :]
+    return f"{token}.xml"
 
 
 def feed_base_url() -> str:

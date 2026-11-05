@@ -4,9 +4,9 @@ import re
 from dataclasses import dataclass
 
 from ardaudiothek_api import get_file_length, get_show_json_graphql
+from feed_files import SHOW_URN_PREFIX
 from rss_xml import build_rss_xml
 
-SHOW_URN_PREFIX = "urn:ard:show:"
 SHOW_TOKEN_PATTERN = re.compile(r"^[a-z0-9]+$")
 
 

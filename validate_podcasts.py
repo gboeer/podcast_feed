@@ -6,7 +6,7 @@ from __future__ import annotations
 import json
 import sys
 
-from feed_files import PODCASTS_FILE, ROOT, feed_slug
+from feed_files import PODCASTS_FILE, ROOT, feed_filename
 from feed_service import parse_and_validate
 
 
@@ -20,7 +20,9 @@ def validate(text: str) -> list[str]:
         return ["top level must be a non-empty list of podcast entries"]
 
     errors: list[str] = []
-    seen_slugs: dict[str, str] = {}
+    # Feed filename -> entry that owns it, to catch the same show listed twice.
+    seen_files: dict[str, str] = {}
+
     for index, entry in enumerate(podcasts):
         where = f"entry {index}"
         if not isinstance(entry, dict):
@@ -32,13 +34,6 @@ def validate(text: str) -> list[str]:
             errors.append(f"{where}: 'name' must be a non-empty string")
         else:
             where = f"entry {index} ({name!r})"
-            slug = feed_slug(name)
-            if slug in seen_slugs:
-                errors.append(
-                    f"{where}: feed filename {slug}.xml clashes with {seen_slugs[slug]!r}"
-                )
-            else:
-                seen_slugs[slug] = name
 
         show_id = entry.get("show_id")
         latest = entry.get("latest")
@@ -48,9 +43,15 @@ def validate(text: str) -> list[str]:
             errors.append(f"{where}: 'latest' must be a positive integer if set")
         else:
             try:
-                parse_and_validate(show_id, str(latest) if latest is not None else None)
+                request = parse_and_validate(show_id, str(latest) if latest is not None else None)
             except ValueError as exc:
                 errors.append(f"{where}: {exc}")
+            else:
+                filename = feed_filename(request.show_id)
+                if filename in seen_files:
+                    errors.append(f"{where}: same show as {seen_files[filename]}")
+                else:
+                    seen_files[filename] = where
 
     return errors
 

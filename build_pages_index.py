@@ -8,7 +8,7 @@ import json
 import shutil
 from datetime import datetime, timezone
 
-from feed_files import FEEDS_DIR, PODCASTS_FILE, ROOT, feed_base_url, feed_slug
+from feed_files import FEEDS_DIR, PODCASTS_FILE, ROOT, feed_base_url, feed_filename
 
 
 PUBLIC_DIR = ROOT / "public"
@@ -24,12 +24,12 @@ def _build_index_html(podcasts: list[dict[str, object]], base_url: str) -> str:
 
     for entry in podcasts:
         name = str(entry["name"])
-        slug = feed_slug(name)
+        filename = feed_filename(str(entry["show_id"]))
         # Skip shows whose fetch failed, so the page never links to a missing feed.
-        if not (FEEDS_DIR / f"{slug}.xml").is_file():
-            print(f"Skipping {name}: no feed file {slug}.xml")
+        if not (FEEDS_DIR / filename).is_file():
+            print(f"Skipping {name}: no feed file {filename}")
             continue
-        feed_url = f"{base_url}/{slug}.xml"
+        feed_url = f"{base_url}/{filename}"
         source_url = str(entry.get("source_url", ""))
         escaped_name = html.escape(name)
         escaped_url = html.escape(feed_url)
