@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import json
+from http.client import HTTPException
 from typing import Any
-from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 
@@ -49,11 +49,13 @@ query ProgramSet($id: ID!, $first: Int) {
 
 def get_file_length(url: str) -> int | None:
     """Fetch Content-Length for a remote resource."""
-    req = Request(url, method="HEAD")
     try:
+        req = Request(url, method="HEAD")
         with urlopen(req, timeout=HEAD_TIMEOUT_SECONDS) as response:
             content_length = response.headers.get("Content-Length")
-    except (HTTPError, URLError, ValueError):
+    except (OSError, HTTPException, ValueError):
+        # OSError covers HTTPError/URLError plus timeouts and connection resets
+        # raised while reading the response; a missing length is not fatal.
         return None
 
     try:
